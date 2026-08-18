@@ -7,7 +7,7 @@ A Claude skill for sifting through source code and cleaning up comments that wer
 **Option A: npx skills**
 
 ```bash
-npx skills add traugdor/comment-cleanup/skills/comment-cleanup
+npx skills add traugdor/my-skills
 ```
 
 This installs the skill into your agent's skills directory automatically. If Claude Code doesn't pick it up right away, check whether it landed in `~/.agents/skills/` instead of `~/.claude/skills/` - some installers use the former, and the two don't always sync automatically.
