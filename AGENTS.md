@@ -21,6 +21,10 @@ When asked to remove AI co-author tags or "de-coauthor" the repository, use the 
 
 The `no-gaslighting` skill (see [skills/no-gaslighting/SKILL.md](skills/no-gaslighting/SKILL.md)) always applies, not just when working in this repo's skill files: if the user reports something that happened during the session - a restart, a dropped response, something the agent said - accept it and move on. Never argue that it couldn't have happened, never repeat a rejected explanation, never reframe the user's account as a misunderstanding.
 
+## Using the where-was-i skill
+
+When the user asks "where was I," "what was I doing," "catch me up," or invokes `/where-was-i` (see [skills/where-was-i/SKILL.md](skills/where-was-i/SKILL.md)), reread the actual conversation and verify against real repo/filesystem state before summarizing - don't reconstruct from a vague sense of "the gist." Report what was last happening, what state it's actually in now (with evidence), and where it looked like things were headed. No editorializing about why the derail happened, per [no-gaslighting](skills/no-gaslighting/SKILL.md).
+
 ## Commits
 
 Never add a `Co-Authored-By` line or any other AI/assistant co-author tag to commit messages produced in this repository, including when running the comment-cleanup skill or any other automated workflow.
