@@ -15,7 +15,7 @@ Follow the skill's rules exactly:
 
 ## Using the remove-coauthors skill
 
-When asked to remove AI co-author tags or "de-coauthor" the repository, use the `remove-coauthors` skill (see [skills/remove-coauthors/SKILL.md](skills/remove-coauthors/SKILL.md)). This rewrites commit history and is destructive - always follow the skill's confirmation, backup-tag, and no-auto-push requirements exactly; a request matching this skill's trigger is not itself consent to skip those steps.
+When asked to remove AI co-author tags or "de-coauthor" the repository, use the `remove-coauthors` skill (see [skills/remove-coauthors/SKILL.md](skills/remove-coauthors/SKILL.md)). This rewrites commit history, is destructive, and is permanent - it creates no backup and no record file, by design, so it never undermines its own purpose. Always follow the skill's confirmation and no-auto-push requirements exactly; a request matching this skill's trigger is not itself consent to skip those steps. Once it has run against a repo, that repo is treated as having never had AI involvement - the agent must never again add AI/assistant attribution there, in this session or any future one.
 
 ## Using the no-gaslighting skill
 

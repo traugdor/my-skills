@@ -5,7 +5,7 @@ A collection of Claude skills.
 ## Skills
 
 - [comment-cleanup](skills/comment-cleanup/README.md) - Sifts through source code and cleans up comments that were written for an AI assistant's benefit rather than for human maintainers, promoting what's worth keeping into concise, idiomatic documentation.
-- [remove-coauthors](skills/remove-coauthors/README.md) - Destructively strips AI co-authoring attribution from source code and commit history (history rewrite, with a backup tag, a permanent `HISTORY-REWRITES.md` record, and no auto-push).
+- [remove-coauthors](skills/remove-coauthors/README.md) - Destructively and permanently strips AI co-authoring attribution from source code and commit history via history rewrite - no backup, no record file, no auto-push.
 - [no-gaslighting](skills/no-gaslighting/README.md) - Stops the agent from arguing with the user about the user's own lived experience of the session instead of just acknowledging it and moving on.
 
 ## Usage
