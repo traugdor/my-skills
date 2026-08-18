@@ -1,0 +1,114 @@
+---
+name: remove-coauthors
+description: Destructively strip AI/assistant co-authoring attribution from both source code and git commit history - removes "Co-Authored-By" trailers and similar attribution lines from commit messages (rewriting history) and deletes matching co-authoring comments/headers from source files, while leaving a permanent HISTORY-REWRITES.md record so the rewrite itself is never a silent erasure. Use this when the user explicitly asks to remove co-author tags, strip AI attribution, or "de-coauthor" a repository. This is a destructive, history-rewriting operation and must never run without explicit per-run confirmation.
+---
+
+# Remove Co-Authors
+
+Strips co-authoring attribution (e.g. `Co-Authored-By: Claude <...>`, `Co-Authored-By: GitHub Copilot <...>`, or similar assistant/tool attribution) from two places:
+
+1. **Source code** - comments, file headers, or generated banners that credit an AI assistant as a co-author/contributor.
+2. **Commit history** - `Co-Authored-By:` trailers (and equivalent attribution lines) inside commit messages, which requires rewriting commit history.
+
+This is a destructive operation. Rewriting commit history changes commit hashes for every rewritten commit and everything downstream of it, and force-pushing overwrites remote history for anyone else who has pulled it.
+
+**This must never be a silent erasure.** Removing `Co-Authored-By` trailers from the message text is not the same as removing the fact that they existed. If the rewrite leaves no trace that it happened, nobody reading the repo later - including the user's own future self, teammates, or an auditor - can tell that AI co-authorship was ever present and then stripped out. That's a transparency regression, not a cleanup. This skill always leaves a plain-text record of the rewrite (Step 2 below) in addition to the backup tag, and that record step is not optional.
+
+## Hard requirements before doing anything
+
+- **Never run this without the user explicitly confirming in the current conversation.** A skill invocation alone is not consent to rewrite history or force-push - treat each of those as a separate action requiring its own confirmation, per the standing safety rules on destructive/hard-to-reverse operations.
+- **Check working tree state first.** Run `git status`. If there are uncommitted changes, stash them (`git stash -u`) or get explicit direction before proceeding - never discard uncommitted work.
+- **Confirm scope with the user** before starting:
+  - Which branch(es)/range of history to rewrite (e.g. "all branches," "just `main`," "commits after X").
+  - Whether to also scrub source files, or commit history only.
+  - Whether the user wants a backup branch/tag created first (recommend one by default: `git tag pre-decoauthor-backup`).
+  - Whether the user intends to force-push afterward, and to which remote(s). Force-pushing is itself a separate confirmable action - do not push without being asked.
+- **Warn explicitly** that this rewrites commit hashes and, if already pushed, will require a force-push that can break other clones/forks/PRs. Get an explicit "yes, rewrite history" before running any rewrite command.
+
+## Step 1: Create a safety backup
+
+Before rewriting anything, create a backup ref so the original history is recoverable:
+
+```bash
+git tag pre-decoauthor-backup
+```
+
+Tell the user this tag exists and how to recover (`git reset --hard pre-decoauthor-backup` on the branch, or `git branch recovery-branch pre-decoauthor-backup`).
+
+## Step 2: Record the rewrite before doing it
+
+Append an entry to `HISTORY-REWRITES.md` at the repo root (create it if it doesn't exist) documenting the rewrite that's about to happen, for example:
+
+```markdown
+## 2026-08-17
+
+AI co-authoring attribution (`Co-Authored-By:` trailers) removed from commit
+history on branch `main`, commits <first-short-hash>..<last-short-hash>.
+Pre-rewrite history preserved at tag `pre-decoauthor-backup`
+(commit <hash-of-backup-tag-target>).
+Requested by: <user, as relayed in the conversation - do not fabricate a name if none was given, just say "repository owner">.
+```
+
+Commit this file **before** running the history rewrite, as an ordinary commit:
+
+```bash
+git add HISTORY-REWRITES.md
+git commit -m "Record upcoming removal of AI co-authoring attribution from history"
+```
+
+This commit itself must not carry a `Co-Authored-By` trailer (see the repository's own commit policy). Because it's committed before the rewrite, it becomes a normal, permanent part of the (now-clean) history - the record survives the thing it's recording. Do not skip this step even if the user seems impatient to just run the rewrite; it takes seconds and it's the only reason the transparency claim in this skill's description is true.
+
+## Step 3: Strip co-authoring from source code
+
+Search the working tree for co-authoring markers in comments/headers, for example:
+
+- `Co-Authored-By:` / `Co-authored-by:`
+- `Generated by <AI tool>` / `Written by <AI tool>` banners left in file headers
+- Any project-specific attribution comment the user points out
+
+Use `Grep` to locate matches across the tree, then edit each file to remove just the attribution line/comment - do not touch surrounding code or unrelated comments. Commit this as its own normal commit (not part of the history rewrite) so it's reviewable as an ordinary diff:
+
+```bash
+git add -A
+git commit -m "Remove AI co-authoring attribution from source"
+```
+
+## Step 4: Strip co-authoring from commit history
+
+Prefer `git filter-repo` if it's available (faster, safer, the modern replacement for `filter-branch`):
+
+```bash
+git filter-repo --message-callback '
+import re
+return re.sub(rb"(?im)^\s*co-authored-by:.*\n?", b"", message)
+'
+```
+
+If `git filter-repo` is not installed, fall back to `git filter-branch` (slower, prints its own destructive-operation warning):
+
+```bash
+git filter-branch --msg-filter '
+sed -E "/^[Cc]o-[Aa]uthored-[Bb]y:/d"
+' -- --all
+```
+
+Only rewrite the range/branches the user confirmed in the requirements step above - do not default to `--all` if the user scoped it narrower.
+
+## Step 5: Verify before anything is pushed
+
+- Run `git log --all --grep="Co-Authored-By" -i` (or equivalent) to confirm no attribution trailers remain in the rewritten range.
+- Confirm `HISTORY-REWRITES.md` (from Step 2) survived the rewrite and is present at the tip of the branch.
+- Spot-check a few rewritten commits with `git show <hash>` to confirm messages look correct and no unrelated content was altered.
+- Report to the user: how many commits were rewritten, that the backup tag exists, that `HISTORY-REWRITES.md` records the rewrite, and that hashes have changed.
+
+## Step 6: Pushing
+
+Do not push or force-push as part of this skill's normal flow. If the user separately asks to push the rewritten history, treat that as its own destructive action requiring explicit confirmation (per the standing rule on force-push), and warn again that it will rewrite remote history for anyone who has already pulled.
+
+## Never do automatically
+
+- Never delete the backup tag/branch without being asked.
+- Never force-push.
+- Never run against a range or branch the user didn't confirm.
+- Never suppress or skip the confirmation step because "the user already asked for this skill" - the skill description matching the request is not the same as per-run confirmation of scope and backup.
+- Never skip or delete the `HISTORY-REWRITES.md` entry, and never run the history rewrite before that entry is committed. A rewrite with no surviving record of itself is a silent erasure, not a cleanup, regardless of what the user asked for.
