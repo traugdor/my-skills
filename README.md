@@ -9,19 +9,47 @@ A collection of Claude skills.
 - [no-gaslighting](skills/no-gaslighting/README.md) - Stops the agent from arguing with the user about the user's own lived experience of the session instead of just acknowledging it and moving on.
 - [where-was-i](skills/where-was-i/README.md) - Rereads the conversation to find where things derailed and gives a short, evidence-backed catch-up on what you were doing and where you were headed.
 
-## Usage
+## Install
 
-**Option A: npx skills**
+Requires [`npx`](https://docs.npmjs.com/cli/v10/commands/npx) (ships with Node.js). All commands below use `-g` for a global (user-level) install, available to every project on your machine - drop `-g` to install into just the current project instead.
+
+**Everything, every agent (simplest option)**
 
 ```bash
-npx skills add traugdor/my-skills
+npx skills add traugdor/my-skills -g -y
 ```
 
-This installs skills into your agent's skills directory automatically. If Claude Code doesn't pick them up right away, check whether they landed in `~/.agents/skills/` instead of `~/.claude/skills/` - some installers use the former, and the two don't always sync automatically.
+Installs all skills in this repo and auto-detects which agents you have on your machine (Claude Code, Cursor, etc.) - no prompts, no picking anything by hand.
 
-**Option B: manual install**
+**Just one or two specific skills**
 
-Copy the relevant folder from `skills/` into your skills directory (e.g. `~/.claude/skills/` for Claude Code, or upload via the skill picker in Claude.ai/Cowork). Once installed, just ask Claude to use it and it'll trigger automatically.
+```bash
+npx skills add traugdor/my-skills -g -s remove-coauthors no-gaslighting
+```
+
+Use `-s`/`--skill` with one or more skill names from the list above. Omit `-y` if you'd like to confirm agent detection interactively.
+
+**Just specific agents**
+
+```bash
+npx skills add traugdor/my-skills -g -a claude-code cursor
+```
+
+Use `-a`/`--agent` to target only the agents you name, instead of every agent detected on your system. `-s` and `-a` combine freely, e.g. `-s remove-coauthors -a claude-code`.
+
+**Keeping skills up to date**
+
+```bash
+npx skills update -g
+```
+
+Run any time to pull the latest version of every installed skill from this repo.
+
+**Manual install (no npx)**
+
+Copy the relevant folder from `skills/` into your agent's skills directory (e.g. `~/.claude/skills/` for Claude Code), or upload it via the skill picker in Claude.ai/Cowork. Once installed, just ask Claude to use it and it'll trigger automatically.
+
+If a skill doesn't get picked up right away after an `npx` install, check whether it landed in `~/.agents/skills/` instead of `~/.claude/skills/` - some installers use the former, and the two don't always sync automatically.
 
 See each skill's README (linked above) for what it does in detail.
 
