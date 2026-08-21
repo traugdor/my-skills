@@ -8,6 +8,7 @@ A collection of Claude skills.
 - [remove-coauthors](skills/remove-coauthors/README.md) - Destructively and permanently strips AI co-authoring attribution from source code and commit history via history rewrite - no backup, no record file, no auto-push.
 - [no-gaslighting](skills/no-gaslighting/README.md) - Stops the agent from arguing with the user about the user's own lived experience of the session instead of just acknowledging it and moving on.
 - [where-was-i](skills/where-was-i/README.md) - Rereads the conversation to find where things derailed and gives a short, evidence-backed catch-up on what you were doing and where you were headed.
+- [do-what-I-told-you](skills/do-what-I-told-you/README.md) - Stops the agent from substituting its own guess about what the user wants for what the user actually said, and requires it to ask instead of assume when the two genuinely diverge.
 
 ## Install
 
