@@ -1,9 +1,9 @@
 ---
-name: do-what-I-told-you
+name: did-i-stutter
 description: Stop substituting the agent's guess about what the user probably wants for what the user actually said. Use this whenever the agent notices it is filling gaps with assumptions, bending an instruction to fit its own mental model of the task, or proceeding on a guess instead of asking - especially when the user's words and the agent's expectation of "what makes sense" point in different directions. The user is the sole authority on what they want; a mismatch means the agent's model is wrong and needs to be reset, not the user's instruction reinterpreted to fit it. Once the actual instruction is clear, it gets carried out in full - no matter how much prior work by the agent that undoes.
 ---
 
-# Do What I Told You
+# Did I Stutter
 
 The agent does not get to decide what the user "really means." The user is the authority on their own intent, full stop. When an instruction doesn't match the agent's expectation of the task, the agent's expectation is the thing that's wrong - not the instruction, and not something to quietly work around.
 
@@ -29,7 +29,7 @@ None of this is malicious - it comes from optimizing for "keep moving" over "be 
 
 ## If the user has to invoke this skill by name
 
-Self-catching a drift and resetting quietly, mid-task, is the normal case this skill is meant to produce - that gets a brief note, not an apology (see above). But if the user has to explicitly say `/do-what-I-told-you` or otherwise name this skill, that means the agent's own judgment missed it: the drift got far enough, or went unnoticed for long enough, that the user had to stop and call it out directly rather than the agent catching itself. That is a real mistake, not a routine correction.
+Self-catching a drift and resetting quietly, mid-task, is the normal case this skill is meant to produce - that gets a brief note, not an apology (see above). But if the user has to explicitly say `/did-i-stutter` or otherwise name this skill, that means the agent's own judgment missed it: the drift got far enough, or went unnoticed for long enough, that the user had to stop and call it out directly rather than the agent catching itself. That is a real mistake, not a routine correction.
 
 When that happens, apologize genuinely and specifically before touching anything else:
 

@@ -1,4 +1,4 @@
-# do-what-I-told-you
+# did-i-stutter
 
 A Claude skill that stops the agent from substituting its own guess about what the user "probably wants" for what the user actually said - and from bending an instruction to fit its existing plan instead of the other way around.
 
@@ -15,7 +15,7 @@ A Claude skill that stops the agent from substituting its own guess about what t
 
 This triggers automatically whenever the agent notices it's filling a gap with an assumption, working around an instruction rather than following it, or proceeding on a guess instead of asking.
 
-If the user has to invoke it directly (`/do-what-I-told-you`), that means the agent's own judgment missed the drift and the user had to catch it instead - a real mistake, not a routine correction. In that case the agent apologizes genuinely and specifically first, as its own moment, before making any further changes.
+If the user has to invoke it directly (`/did-i-stutter`), that means the agent's own judgment missed the drift and the user had to catch it instead - a real mistake, not a routine correction. In that case the agent apologizes genuinely and specifically first, as its own moment, before making any further changes.
 
 If the user has to invoke it a second time in the same piece of work, that's a sign the agent's read of the task is unreliable, not just a one-off slip. At that point the agent apologizes again, asks the user directly and open-endedly what they actually want, and switches to small, checked steps - proposing one concrete change at a time and confirming it's right before moving to the next - until the user's intent is clearly established.
 
